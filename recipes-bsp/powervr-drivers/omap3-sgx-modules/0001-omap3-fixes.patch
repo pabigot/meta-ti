@@ -1,0 +1,76 @@
+From 93632202a0871ec9cdbf264fa73507f06708ffd1 Mon Sep 17 00:00:00 2001
+From: "Peter A. Bigot" <pab@pabigot.com>
+Date: Sun, 13 Jan 2013 17:27:12 -0600
+Subject: [PATCH] omap3 fixes
+
+These are the minimal changes from the following site required to build the modules for gumstix overo:
+
+https://build.opensuse.org/package/show?package=TI_Graphics_SDK&project=home%3AGuillaume_G%3AARM
+
+Not author, not able to validate, not submitting upstream.
+
+Upstream-Status: Inappropriate [other]
+Signed-off-by: Peter A. Bigot <pab@pabigot.com>
+---
+ services4/3rdparty/bufferclass_ti/bc_cat.c         |    3 ++-
+ .../3rdparty/dc_omapfb3_linux/omaplfb_linux.c      |    2 ++
+ services4/srvkm/devices/sgx/sgxinit.c              |    2 +-
+ 3 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/services4/3rdparty/bufferclass_ti/bc_cat.c b/services4/3rdparty/bufferclass_ti/bc_cat.c
+index 5861e8e..281387b 100755
+--- a/services4/3rdparty/bufferclass_ti/bc_cat.c
++++ b/services4/3rdparty/bufferclass_ti/bc_cat.c
+@@ -37,6 +37,7 @@
+ #include "bc_cat.h"
+ #include <linux/slab.h>
+ #include <linux/dma-mapping.h>
++#include <plat/cpu.h>
+ 
+ #define DEVNAME             "bccat"
+ #define DRVNAME             DEVNAME
+@@ -609,7 +610,7 @@ static int __init bc_cat_init(void)
+ #ifdef PLAT_TI8168
+      width_align = 8;
+ #else
+-     width_align = cpu_is_omap3530() && ( omap_rev() < OMAP3430_REV_ES3_0 ) ? 32 : 8; 
++     width_align = cpu_is_omap3430() && ( omap_rev() < OMAP3430_REV_ES3_0 ) ? 32 : 8; 
+ #endif   
+  
+     major = register_chrdev(0, DEVNAME, &bc_cat_fops);
+diff --git a/services4/3rdparty/dc_omapfb3_linux/omaplfb_linux.c b/services4/3rdparty/dc_omapfb3_linux/omaplfb_linux.c
+index 248e964..7a0b4f2 100755
+--- a/services4/3rdparty/dc_omapfb3_linux/omaplfb_linux.c
++++ b/services4/3rdparty/dc_omapfb3_linux/omaplfb_linux.c
+@@ -281,6 +281,7 @@ void OMAPLFBFlip(OMAPLFB_DEVINFO *psDevInfo, OMAPLFB_BUFFER *psBuffer)
+ #endif
+ }
+ 
++#if 0
+ OMAPLFB_UPDATE_MODE OMAPLFBGetUpdateMode(OMAPLFB_DEVINFO *psDevInfo)
+ {
+ 	struct omap_dss_device *psDSSDev = fb2display(psDevInfo->psLINFBInfo);
+@@ -354,6 +355,7 @@ OMAPLFB_BOOL OMAPLFBSetUpdateMode(OMAPLFB_DEVINFO *psDevInfo, OMAPLFB_UPDATE_MOD
+ 	return (res == 0);
+ //return 1;
+ }
++#endif /* 0 */
+ 
+ OMAPLFB_BOOL OMAPLFBWaitForVSync(OMAPLFB_DEVINFO *psDevInfo)
+ {
+diff --git a/services4/srvkm/devices/sgx/sgxinit.c b/services4/srvkm/devices/sgx/sgxinit.c
+index 052618d..48bf06e 100755
+--- a/services4/srvkm/devices/sgx/sgxinit.c
++++ b/services4/srvkm/devices/sgx/sgxinit.c
+@@ -409,7 +409,7 @@ PVRSRV_ERROR SGXInitialise(PVRSRV_SGXDEV_INFO	*psDevInfo,
+         }
+ 
+ #else
+-        if(!(cpu_is_omap3530() || cpu_is_omap3517()))
++        if(!(cpu_is_omap3430()))
+ 	{
+                OSWriteHWReg(psDevInfo->pvRegsBaseKM, 0xFF08, 0x80000000);//OCP Bypass mode
+ 	}
+-- 
+1.7.7.6
+
