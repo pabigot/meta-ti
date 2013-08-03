@@ -20,7 +20,7 @@ PROVIDES += "ti-syslink-examples"
 
 # This package builds a kernel module, use kernel PR as base and append a local version
 PR = "${MACHINE_KERNEL_PR}"
-PR_append = "a"
+PR_append = "b"
 PVExtra = ""
 
 inherit module pkgconfig
@@ -216,22 +216,6 @@ do_install () {
 
 PACKAGES =+ "ti-syslink-module"
 FILES_ti-syslink-module = "/lib/modules/${KERNEL_VERSION}/kernel/drivers/dsp/syslink.ko" 
-RDEPENDS_ti-syslink-module += "update-modules"
-
-pkg_postinst_ti-syslink-module () {
-#!/bin/sh
-if [ -n "$D" ]; then
-	exit 1
-fi
-
-depmod -a
-update-modules || true
-}
-
-pkg_postrm_ti-syslink-module () {
-#!/bin/sh
-update-modules || true
-}
 
 PACKAGES =+ "ti-syslink-examples"
 RRECOMMENDS_ti-syslink-examples_append = " ti-syslink-module"
